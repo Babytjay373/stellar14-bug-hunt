@@ -7,7 +7,7 @@ use crate::types::{Wallet, BASE_FEE_STROOPS};
 /// True when the wallet can pay `amount` plus the network fee.
 /// Spending the exact balance, down to zero, is allowed.
 pub fn can_pay(wallet: &Wallet, amount: u64) -> bool {
-    wallet.balance > amount + BASE_FEE_STROOPS
+    wallet.balance >= amount + BASE_FEE_STROOPS
 }
 
 #[cfg(test)]
