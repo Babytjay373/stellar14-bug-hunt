@@ -1,48 +1,65 @@
 name: CI
 
+# Only the check for the bug a PR touches runs, so 6 teams can push at once
+# without queueing behind each other. Docs only PRs skip this workflow.
 on:
   push:
     branches: [main]
+    paths-ignore: ["**.md", "attendees/**"]
   pull_request:
+    paths-ignore: ["**.md", "attendees/**"]
+  workflow_dispatch:
 
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  track-a:
-    name: bug-${{ matrix.bug }}
+  detect:
+    name: detect
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        bug: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
+    outputs:
+      bugs: ${{ steps.pick.outputs.bugs }}
     steps:
       - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@v2
-      - name: Test bug ${{ matrix.bug }}
+        with:
+          fetch-depth: 0
+      - id: pick
         run: |
-          if [ "${{ matrix.bug }}" -le 6 ]; then
-            cargo test -p wallet-basics --features bug${{ matrix.bug }} bug${{ matrix.bug }}
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            # On a PR, HEAD is GitHub's test merge commit and HEAD^1 is the tip of main it merges into.
+            bugs=$(.github/scripts/pick-bugs.sh HEAD^1)
           else
-            cargo test -p wallet-basics bug${{ matrix.bug }}
+            bugs=$(.github/scripts/pick-bugs.sh all)
           fi
+          echo "Checks to run: $bugs"
+          echo "bugs=$bugs" >> "$GITHUB_OUTPUT"
 
-  track-b:
+  test:
     name: bug-${{ matrix.bug }}
+    needs: detect
+    if: needs.detect.outputs.bugs != '[]'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        bug: ["13", "14", "15", "16"]
-    defaults:
-      run:
-        working-directory: track-b-soroban
+        bug: ${{ fromJSON(needs.detect.outputs.bugs) }}
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
         with:
-          workspaces: track-b-soroban
+          shared-key: bughunt
+          cache-on-failure: true
+          workspaces: |
+            . -> target
+            track-b-soroban -> target
       - name: Test bug ${{ matrix.bug }}
-        run: cargo test bug${{ matrix.bug }}
+        run: |
+          n=$((10#${{ matrix.bug }}))
+          if [ "$n" -le 6 ]; then
+            cargo test -p wallet-basics --features bug${{ matrix.bug }} bug${{ matrix.bug }}
+          elif [ "$n" -le 12 ]; then
+            cargo test -p wallet-basics bug${{ matrix.bug }}
+          else
+            cd track-b-soroban && cargo test bug${{ matrix.bug }}
+          fi

@@ -2,7 +2,15 @@
 
 Welcome to the Stellar 14 build days Meetup, Saturday 10 October 2026, at Payaza Africa, Labone (Ndabaningi Sithole Rd), Accra.
 
-This repo is broken on purpose. It is a small Stellar flavoured wallet written in Rust, plus a tiny Soroban tip jar contract, and we planted 16 bugs in it. Your job today is to fork it, find a bug, fix it on its own branch, and open a pull request. We review and merge the pull requests live on the projector, so for many of you this will be your first open source contribution.
+This repo is broken on purpose. It is a small Stellar flavoured wallet written in Rust, plus a tiny Soroban tip jar contract, and we planted 16 bugs in it.
+
+Today is a team game. Coders play in teams of 4 or 5. Every round unlocks 2 or 3 bugs for all teams at once, a countdown runs on the projector, and every green pull request scores points. We review and merge the winning pull requests live on the projector, so for many of you this will be your first open source contribution.
+
+Not coding? Join the **Content Crew**. See [CREW.md](CREW.md) for the roles, your own docs only first PR, and the content competition.
+
+* Rounds, points and which bugs unlock when: [ROUNDS.md](ROUNDS.md)
+* Team PR flow: [CONTRIBUTING.md](CONTRIBUTING.md)
+* Hashtag for the day: `#Stellar14Accra`
 
 Everything here uses what we covered this week: Git and pull requests, structs, enums and match, traits, Option and Result, ownership and borrowing, and a first look at Soroban.
 
@@ -65,7 +73,7 @@ A bug is fixed when its command prints `test result: ok`. Do not change or delet
 
 ## Bug list
 
-Each bug has a matching GitHub issue with the same number. Claim a bug by commenting on its issue before you start.
+Each bug has a matching GitHub issue with the same number. All of them are visible, but only the bugs of the live round score. See [ROUNDS.md](ROUNDS.md).
 
 | # | Issue title | Difficulty | File | Reproduce |
 | --- | --- | --- | --- | --- |
@@ -86,31 +94,31 @@ Each bug has a matching GitHub issue with the same number. Claim a bug by commen
 | 15 | Tipping more than you have is allowed | stretch | `track-b-soroban/src/checks.rs` | `cd track-b-soroban && cargo test bug15` |
 | 16 | Tip event names the wrong receiver | stretch | `track-b-soroban/src/events.rs` | `cd track-b-soroban && cargo test bug16` |
 
-Bug 8 is the one we fix together on the projector as the live demo, so watch that one first.
+Bug 8 is the one the host fixes on the projector as the live demo. It does not score.
 
-## Rules of the hunt
+## Teams
 
-1. **One bug per branch, one bug per pull request.**
-2. **Branch name:** `fix/<bug-number>-<short-name>`, for example `fix/07-paging`.
-3. **PR title:** `Fix #N: <what you fixed>`, for example `Fix #7: start pages at the first item`. Put `Fixes #N` in the PR description so the issue closes when we merge.
-4. **Claim before you code.** Comment "I'm on this" on the issue. If a bug is already claimed, team up with that person, or pick another one.
-5. **Only touch the file for your bug.** Do not edit `types.rs`, `Cargo.toml`, or the tests.
-6. **Lots of people, 16 bugs.** You are welcome to fix any bug in your own fork to practise. We merge the first clean PR for each bug, and we review the others out loud so everyone learns from them.
-7. Stuck for more than 10 minutes? Raise your hand. Reading the compiler error out loud together is half the fix.
+* Teams of 4 or 5, formed in the room by counting off. Every team needs at least one person whose laptop already runs `cargo test`. That person is the **captain**.
+* Team names for today: **Kente, Jollof, Black Stars, Lumens, Adinkra, Kelewele** (and **Waakye** if we need a seventh).
+* The captain forks the repo once. That fork is the **team fork**. The captain adds every teammate as a collaborator on it (Settings, Collaborators, Add people), and teammates accept the invite from their email or https://github.com/notifications.
 
-## Bonus PRs
+## Rules of the game
 
-Fixed your bug, or everything is claimed? These count on the leaderboard too:
-
-* Add one more unit test to any bug file that checks an edge case.
-* Improve a doc comment so the next person understands the function faster.
-* Add a short example in a doc comment that shows how to call a function.
-
-Bonus PR titles start with `Docs:` or `Test:` instead of `Fix #N:`.
+1. **One PR per team per issue**, opened from the team fork into `nyuiela/stellar14-bug-hunt`.
+2. **Branch name:** `fix/<bug-number>-<team>`, for example `fix/07-kente`.
+3. **PR title:** `Team <name>: Fix #N`, for example `Team Kente: Fix #7`. Put `Fixes #N` in the description.
+4. **One driver per round.** The driver types and pushes from their own laptop. Everyone else reads errors, checks the docs and spots bugs. Rotate the driver every round so everyone types at least once.
+5. **Only work on the issues of the live round.** The countdown on the projector is the official clock. PRs must be open before it hits zero.
+6. **Green CI scores.** Easy 1, medium 2, stretch 3, plus 1 bonus for the first team to go green on that issue. Full table in [ROUNDS.md](ROUNDS.md).
+7. **Only touch the file for your bug.** Never edit tests, `types.rs` or `Cargo.toml`.
+8. **No spoilers.** Do not post fixes in issue comments or show them to other teams.
+9. Stuck for more than 5 minutes? Raise a hand. Reading the compiler error out loud together is half the fix.
 
 ## CI
 
-Every pull request runs GitHub Actions. There is one check per bug, named `bug-01` up to `bug-16`. `main` starts with every bug check red. Your PR is ready when the check for your bug turns green.
+Every pull request runs GitHub Actions, and only the check for the bug you touched runs, so results come back fast. The checks are named `bug-01` up to `bug-16`. Your PR scores when the check for your bug turns green. `main` starts with every bug red on purpose.
+
+Docs only PRs (Content Crew, glossary, attendees wall) skip the Rust checks and get a quick `docs` check instead.
 
 ## Credits
 
