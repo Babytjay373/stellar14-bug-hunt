@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  track-a:
+    name: bug-${{ matrix.bug }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        bug: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Test bug ${{ matrix.bug }}
+        run: |
+          if [ "${{ matrix.bug }}" -le 6 ]; then
+            cargo test -p wallet-basics --features bug${{ matrix.bug }} bug${{ matrix.bug }}
+          else
+            cargo test -p wallet-basics bug${{ matrix.bug }}
+          fi
+
+  track-b:
+    name: bug-${{ matrix.bug }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        bug: ["13", "14", "15", "16"]
+    defaults:
+      run:
+        working-directory: track-b-soroban
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: track-b-soroban
+      - name: Test bug ${{ matrix.bug }}
+        run: cargo test bug${{ matrix.bug }}

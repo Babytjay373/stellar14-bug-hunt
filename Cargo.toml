@@ -1,0 +1,5 @@
+[workspace]
+resolver = "2"
+members = ["track-a-basics"]
+# Track B has its own workspace so Track A never downloads soroban-sdk.
+exclude = ["track-b-soroban"]
