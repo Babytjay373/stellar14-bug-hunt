@@ -30,7 +30,7 @@ You need four things. If any of them is missing, come to the help desk at the fr
 
 Track B only:
 
-5. Soroban tests run with plain `cargo test`, so the Rust setup above is enough to work on Track B. The first build downloads `soroban-sdk` and takes a few minutes, so start it early.
+5. Track B uses soroban-sdk 28, which needs Rust 1.91 or newer. Run `rustup update` if your Rust is older. Soroban tests run with plain `cargo test`, so the Rust setup above is enough to work on Track B. The first build downloads `soroban-sdk` and takes a few minutes, so start it early.
 6. Optional: the Stellar CLI, if you also want to build the contract to Wasm with `stellar contract build`: https://developers.stellar.org/docs/tools/cli/install-cli
 
 ## Get the code
